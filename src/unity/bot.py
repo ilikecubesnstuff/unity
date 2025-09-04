@@ -1,10 +1,33 @@
+import logging
 from pathlib import Path
 
 import discord
 
+logger = logging.getLogger(__name__)
 
-def create_bot(debug_guilds=None, cogs_path=Path("src/unity/cogs")):
-    bot = discord.Bot(debug_guilds=debug_guilds)
+
+class UnityBot(discord.Bot):
+
+    async def on_ready(self):
+        logger.info(f"Logged in as {self.user}. (ID: {self.user.id})")
+        if self.status:
+            logger.info(f"Status set to {self.status.name}.")
+        if self.activity:
+            logger.info(
+                f"Activity set to {self.activity.type.name + " " + self.activity.name if self.activity.type is not discord.ActivityType.custom else self.activity.name}."
+            )
+        logger.info(f"Connected to {len(self.guilds)} guild(s).")
+        for guild in self.guilds:
+            logger.debug(f"Connected to guild: {guild.name}. (ID: {guild.id})")
+
+
+def create_bot(
+    activity=discord.CustomActivity("Clanking"),
+    status=discord.Status.dnd,
+    debug_guilds=None,
+    cogs_path=Path("src/unity/cogs"),
+):
+    bot = UnityBot(activity=activity, status=status, debug_guilds=debug_guilds)
 
     cogs_path = Path(cogs_path)
     if not cogs_path.exists():
@@ -14,8 +37,8 @@ def create_bot(debug_guilds=None, cogs_path=Path("src/unity/cogs")):
         extension = f"unity.cogs.{file.stem}"
         try:
             bot.load_extension(extension)
-            print(f"Loaded extension '{extension}'")
+            logger.info(f"Loaded extension '{extension}'.")
         except Exception as e:
-            print(f"Failed to load extension {extension}.", e)
+            logger.error(f"Failed to load extension {extension}.", exc_info=e)
 
     return bot

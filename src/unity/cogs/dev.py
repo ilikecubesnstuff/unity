@@ -1,7 +1,10 @@
+import logging
 import subprocess
 
 import discord
 from discord.ext import commands
+
+logger = logging.getLogger(__name__)
 
 
 class Dev(commands.Cog):
@@ -23,8 +26,10 @@ class Dev(commands.Cog):
         extension = f"unity.cogs.{name}"
         try:
             ctx.bot.load_extension(extension)
+            logger.info(f"Loaded extension '{extension}'.")
             await ctx.respond(f"Loaded extension '{name}'.")
         except Exception as e:
+            logger.error(f"Failed to load extension '{name}'.", exc_info=e)
             await ctx.respond(
                 f"Failed to load extension '{name}'. See error message:\n```{e}```"
             )
@@ -34,13 +39,16 @@ class Dev(commands.Cog):
     async def unload(self, ctx, name):
         """Unload an extension."""
         if name == "dev":
+            logger.warning("Attempt to unload 'dev' extension blocked.")
             await ctx.respond("You cannot unload the 'dev' extension.")
             return
         extension = f"unity.cogs.{name}"
         try:
             ctx.bot.unload_extension(extension)
+            logger.info(f"Unloaded extension '{extension}'.")
             await ctx.respond(f"Unloaded extension '{name}'.")
         except Exception as e:
+            logger.error(f"Failed to unload extension '{name}'.", exc_info=e)
             await ctx.respond(
                 f"Failed to unload extension '{name}'. See error message:\n```{e}```"
             )
@@ -52,12 +60,14 @@ class Dev(commands.Cog):
         extension = f"unity.cogs.{name}"
         try:
             ctx.bot.reload_extension(extension)
+            logger.info(f"Reloaded extension '{extension}'.")
             await ctx.respond(f"Reloaded extension '{name}'.")
         except Exception as e:
+            logger.error(f"Failed to reload extension '{name}'.", exc_info=e)
             await ctx.respond(
                 f"Failed to reload extension '{name}'. See error message:\n```{e}```"
             )
-    
+
     git = discord.SlashCommandGroup("git", "Git operations")
 
     @git.command(name="pull")
@@ -66,17 +76,17 @@ class Dev(commands.Cog):
         """Pull the latest changes from the git repository."""
         try:
             result = subprocess.run(
-                ["git", "pull"],
-                capture_output=True,
-                text=True,
-                check=True
+                ["git", "pull"], capture_output=True, text=True, check=True
             )
             output = (result.stdout + result.stderr).strip()
+            logger.debug(f"Git pull output: {output}")
+
             message = "Git pull successful."
             if output:
                 message += f"\n```{output}```"
             await ctx.respond(message)
         except subprocess.CalledProcessError as e:
+            logger.error(f"Git pull failed: {e.stdout}\n{e.stderr}")
             await ctx.respond(f"Git pull failed:\n```{e.stdout}\n{e.stderr}```")
 
     @git.command(name="checkout")
@@ -85,17 +95,17 @@ class Dev(commands.Cog):
         """Checkout a specific branch in the git repository."""
         try:
             result = subprocess.run(
-                ["git", "checkout", branch],
-                capture_output=True,
-                text=True,
-                check=True
+                ["git", "checkout", branch], capture_output=True, text=True, check=True
             )
             output = (result.stdout + result.stderr).strip()
+            logger.debug(f"Git checkout output: {output}")
+
             message = f"Checked out branch '{branch}'."
             if output:
                 message += f"\n```{output}```"
             await ctx.respond(message)
         except subprocess.CalledProcessError as e:
+            logger.error(f"Git checkout failed: {e.stdout}\n{e.stderr}")
             await ctx.respond(f"Git checkout failed:\n```{e.stdout}\n{e.stderr}```")
 
 
