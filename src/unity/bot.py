@@ -22,8 +22,8 @@ class UnityBot(discord.Bot):
 
 
 def create_bot(
-    activity=discord.CustomActivity("Clanking"),
-    status=discord.Status.dnd,
+    activity=None,
+    status=None,
     debug_guilds=None,
     cogs_path=Path("src/unity/cogs"),
 ):
