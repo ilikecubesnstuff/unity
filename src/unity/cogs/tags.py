@@ -101,7 +101,7 @@ class Tags(commands.Cog):
 
         tags = await Tag.all()
         for tag in tags:
-            if re.fullmatch(tag.trigger, message.content, re.DOTALL):
+            if re.fullmatch(tag.trigger, message.content, re.DOTALL | re.IGNORECASE):
                 await message.channel.send(tag.response)
                 return
 
