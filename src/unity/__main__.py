@@ -2,10 +2,10 @@ import logging
 import os
 import sys
 
-from dotenv import load_dotenv
 import discord
+from dotenv import load_dotenv
 
-from .bot import create_bot
+from .bot import UnityBot
 
 dotenv_path = sys.argv[2] if len(sys.argv) > 2 else ".env"
 if not os.path.exists(dotenv_path):
@@ -27,16 +27,22 @@ ch.setFormatter(fmt)
 
 
 # create and run the bot
-debug_guilds = os.getenv("DEBUG_GUILDS").split(",") if os.getenv("DEBUG_GUILDS") else None
+debug_guilds = (
+    os.getenv("DEBUG_GUILDS").split(",") if os.getenv("DEBUG_GUILDS") else None
+)
 status = os.getenv("BOT_STATUS", "online").lower()
 activity_type = os.getenv("BOT_ACTIVITY_TYPE", "playing").lower()
 activity_name = os.getenv("BOT_ACTIVITY_NAME", None)
-activity = discord.Activity(
-    type=getattr(discord.ActivityType, activity_type, discord.ActivityType.playing),
-    name=activity_name,
-) if activity_name else None
+activity = (
+    discord.Activity(
+        type=getattr(discord.ActivityType, activity_type, discord.ActivityType.playing),
+        name=activity_name,
+    )
+    if activity_name
+    else None
+)
 
-bot = create_bot(
+bot = UnityBot(
     status=getattr(discord.Status, status, discord.Status.online),
     activity=activity,
     debug_guilds=debug_guilds,

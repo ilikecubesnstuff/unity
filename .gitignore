@@ -11,3 +11,8 @@ wheels/
 
 # Sensitive files
 .env
+
+# Database files
+*.db
+*.db-shm
+*.db-wal

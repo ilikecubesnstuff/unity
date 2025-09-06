@@ -11,7 +11,15 @@ logger = logging.getLogger(__name__)
 
 class UnityBot(discord.Bot):
 
-    def __init__(self, *, activity=None, status=None, debug_guilds=None, cogs_path=Path("src/unity/cogs"), **options):
+    def __init__(
+        self,
+        *,
+        activity=None,
+        status=None,
+        debug_guilds=None,
+        cogs_path=Path("src/unity/cogs"),
+        **options,
+    ):
         super().__init__(
             activity=activity,
             status=status,
@@ -24,7 +32,7 @@ class UnityBot(discord.Bot):
         cogs_path = Path(cogs_path)
         if not cogs_path.exists():
             raise FileNotFoundError(f"The directory {cogs_path} does not exist.")
-        
+
         for file in cogs_path.glob("*.py"):
             extension = f"unity.cogs.{file.stem}"
             try:
@@ -33,7 +41,6 @@ class UnityBot(discord.Bot):
             except Exception as e:
                 logger.error(f"Failed to load extension {extension}.", exc_info=e)
 
-
     async def login(self, token):
         # use this pocket to set up database connection
         await Tortoise.init(config=TORTOISE_ORM)
@@ -41,7 +48,6 @@ class UnityBot(discord.Bot):
 
         # then log in
         await super().login(token)
-
 
     async def on_ready(self):
         logger.info(f"Logged in as {self.user}. (ID: {self.user.id})")
