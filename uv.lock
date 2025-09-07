@@ -481,6 +481,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "aerich" },
+    { name = "aiohttp" },
     { name = "anyio" },
     { name = "audioop-lts" },
     { name = "py-cord" },
@@ -491,6 +492,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "aerich", specifier = ">=0.9.1" },
+    { name = "aiohttp", specifier = ">=3.12.15" },
     { name = "anyio", specifier = ">=4.10.0" },
     { name = "audioop-lts", specifier = ">=0.2.2" },
     { name = "py-cord", specifier = ">=2.6.1" },

@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "aerich>=0.9.1",
+    "aiohttp>=3.12.15",
     "anyio>=4.10.0",
     "audioop-lts>=0.2.2",
     "py-cord>=2.6.1",
