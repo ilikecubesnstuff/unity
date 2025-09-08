@@ -2,6 +2,8 @@ import logging
 import random
 import time
 
+from itertools import permutations
+
 import discord
 from discord.ext import commands
 
@@ -20,7 +22,7 @@ class Game24(commands.Cog):
             ]
 
     def sample(self):
-        return random.choice(self.solvable)
+        return random.choice(list(permutations(self.solvable)))
 
     twentyfour = discord.SlashCommandGroup("twentyfour", "Play the 24 game")
 
