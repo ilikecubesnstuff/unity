@@ -22,7 +22,7 @@ class Game24(commands.Cog):
             ]
 
     def sample(self):
-        return random.choice(list(permutations(self.solvable)))
+        return random.choice(list(permutations(random.choice(self.solvable))))
 
     twentyfour = discord.SlashCommandGroup("twentyfour", "Play the 24 game")
 
