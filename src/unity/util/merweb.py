@@ -55,9 +55,9 @@ processing_map = {
     r"\{d_link\|(.*?)\|(.*?)\}": lambda m: mw_dict_link(m.group(1)),  # direct link
     r"\{i_link\|(.*?)\|(.*?)\}": lambda m: mw_dict_link(m.group(1)),  # italicized link
     r"\{et_link\|(.*?)\|(.*?)\}": lambda m: mw_dict_link(m.group(1)),  # etymology link
-    r"\{mat\|(.*?)\|(.*?)\}": lambda m: mw_dict_link(m.group(1)),  # more at target
+    r"\{mat\|(.*?)(\:.*?)?\|(.*?)\}": lambda m: mw_dict_link(m.group(1)),  # more at target
     r"\{sx\|(.*?)\|(.*?)\|(.*?)\}": lambda m: mw_dict_link(m.group(1)),  # synonymous xref
-    r"\{dxt\|(.*?)(:.*)?\|(.*?)\|(.*?)\}": lambda m: mw_dict_link(m.group(1)),  # directional xref target
+    r"\{dxt\|(.*?)(\:.*?)?\|(.*?)\|(.*?)\}": lambda m: mw_dict_link(m.group(1)),  # directional xref target
     # date sense
     r"\{ds\|(.*?)\|(.*?)\|(.*?)\}": lambda m: "",  # date sense
 }
