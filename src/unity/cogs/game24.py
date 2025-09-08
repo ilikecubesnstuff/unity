@@ -41,25 +41,22 @@ class Game24(commands.Cog):
                     timeout=120,
                 )
             except TimeoutError:
-                answer = ""
+                await prompt.edit(
+                    content=", ".join(map(str, nums))
+                    + "\n-# Time's up! No correct answer was given."
+                )
+                return
 
             if answer.content.lower() in ["quit", "exit", "stop"]:
                 await prompt.edit(
                     content=", ".join(map(str, nums)) + "\n-# Game ended."
                 )
                 return
-            elif answer:
-                elapsed = time.time() - start_time
-                await prompt.edit(
-                    content=", ".join(map(str, nums))
-                    + f"\n-# {answer.author.mention} got it in {elapsed:.2f} seconds with `{answer.content}`."
-                )
-            else:
-                await prompt.edit(
-                    content=", ".join(map(str, nums))
-                    + "\n-# Time's up! No correct answer was given."
-                )
-                return
+            elapsed = time.time() - start_time
+            await prompt.edit(
+                content=", ".join(map(str, nums))
+                + f"\n-# {answer.author.mention} got it in {elapsed:.2f} seconds with `{answer.content}`."
+            )
 
     def eval_check(self, expr, nums, target=24):
         if expr.lower() in ["quit", "exit", "stop"]:
