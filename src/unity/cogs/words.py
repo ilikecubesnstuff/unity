@@ -40,6 +40,9 @@ def extract_page_from_entry(entry):
             description = f"-# {word}"
 
     # construct main text with definitions
+    if "def" not in entry:
+        return
+
     lines = [f"## {mw_dict_link(word)}{fl}"]
     for sseq in entry["def"]:
         if "vd" in sseq:
@@ -100,7 +103,11 @@ def extract_page_from_entry(entry):
             inline=False,
         )
 
-    return Page(content=processed("\n".join(lines)), embeds=[embed])
+    text = processed("\n".join(lines))
+    if len(text) > 2000:
+        end = "\n-# ...(truncated)"
+        text = text[: 2000 - len(end)] + end
+    return Page(content=text, embeds=[embed])
 
 
 class Words(commands.Cog):
@@ -164,7 +171,10 @@ class Words(commands.Cog):
             )
             return
 
-        pages = [extract_page_from_entry(entry) for entry in response]
+        pages = []
+        for entry in response:
+            if page := extract_page_from_entry(entry):
+                pages.append(page)
         paginator = Paginator(pages)
         await paginator.respond(ctx.interaction)
 
