@@ -22,3 +22,8 @@ build-backend = "uv_build"
 tortoise_orm = "unity.db.config.TORTOISE_ORM"
 location = "./migrations"
 src_folder = "./src"
+
+[tool.black]
+line-length = 88
+target-version = ["py313"]
+extend-exclude = ".*/merweb.py"
