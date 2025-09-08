@@ -1,7 +1,6 @@
 import logging
 import random
 import time
-
 from itertools import permutations
 
 import discord
@@ -27,7 +26,14 @@ class Game24(commands.Cog):
     twentyfour = discord.SlashCommandGroup("twentyfour", "Play the 24 game")
 
     @twentyfour.command(name="start")
-    async def start_game(self, ctx):
+    @discord.option(
+        "timeout",
+        int,
+        description="Time limit in minutes (default 3)",
+        required=False,
+        default=3,
+    )
+    async def start_game(self, ctx, timeout: int):
         """Start a new game of 24."""
 
         await ctx.respond("Starting a new game of 24!")
@@ -40,7 +46,7 @@ class Game24(commands.Cog):
                     "message",
                     check=lambda m: m.channel == ctx.channel
                     and self.eval_check(m.content, nums),
-                    timeout=120,
+                    timeout=timeout * 60,
                 )
             except TimeoutError:
                 await prompt.edit(
@@ -95,10 +101,6 @@ class Game24(commands.Cog):
             return eval_prefix(tokens)
         except Exception:
             pass
-
-    # @commands.Cog.listener()
-    # async def on_message(self, message):
-    #     pass
 
 
 def tokenize(text):
