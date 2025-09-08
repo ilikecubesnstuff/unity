@@ -17,6 +17,12 @@ class Dev(commands.Cog):
         latency = self.bot.latency * 1000  # Convert to milliseconds
         await ctx.respond(f"Pong! Latency: {latency:.2f} ms")
 
+    @discord.slash_command()
+    async def sync(self, ctx):
+        """Sync the bot's slash commands with Discord."""
+        await self.bot.sync_commands()
+        await ctx.respond("Slash commands synced!")
+
     extensions = discord.SlashCommandGroup("extensions", "Manage bot extensions")
 
     @extensions.command(name="load")
