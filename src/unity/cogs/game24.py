@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 class Game24(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.games = set()
 
         with open("data/game24/4d12.txt") as f:
             self.solvable = [
@@ -29,12 +30,16 @@ class Game24(commands.Cog):
     @discord.option(
         "timeout",
         int,
-        description="Time limit in minutes (default 3)",
+        description="Time limit in minutes (default 5)",
         required=False,
-        default=3,
+        default=5,
     )
     async def start_game(self, ctx, timeout: int):
         """Start a new game of 24."""
+        if ctx.channel.id in self.games:
+            await ctx.respond("A game is already running in this channel.")
+            return
+        self.games.add(ctx.channel.id)
 
         await ctx.respond("Starting a new game of 24!")
         while True:
@@ -49,16 +54,20 @@ class Game24(commands.Cog):
                     timeout=timeout * 60,
                 )
             except TimeoutError:
+                self.games.remove(ctx.channel.id)
                 await prompt.edit(
                     content=", ".join(map(str, nums))
                     + "\n-# Time's up! No correct answer was given."
                 )
+                await ctx.send("24 game ended due to timeout.")
                 return
 
             if answer.content.lower() in ["quit", "exit", "stop"]:
+                self.games.remove(ctx.channel.id)
                 await prompt.edit(
                     content=", ".join(map(str, nums)) + "\n-# Game ended."
                 )
+                await ctx.send(f"24 game ended by {answer.author.mention}.")
                 return
             elapsed = time.time() - start_time
             await prompt.edit(
