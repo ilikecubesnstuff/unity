@@ -73,15 +73,12 @@ class Game24(commands.Cog):
             tokens = tokenize(expr)
         except Exception:
             return False
-        print("tokenized", expr, tokens)
 
-        inums = [t for t in tokens if isinstance(t, int)]
+        inums = extract_nums(tokens)
         if sorted(inums) != sorted(nums):
             return False
-        print("compared", inums, nums)
 
         result = self.eval_expr(expr)
-        print("evaluated", result, target)
         return result == target
 
     def eval_expr(self, expr):
@@ -116,9 +113,16 @@ def tokenize(text):
             tokens.append(int(buffer))
         elif char in "+-*/":
             tokens.append(char)
-        elif char in "(":
-            j = text.index(")")
-            tokens.append(tokenize(text[i + 1 : j]))
+        elif char in '(':
+            j = i
+            depth = 1
+            while depth > 0:
+                j += 1
+                if text[j] == '(':
+                    depth += 1
+                elif text[j] == ')':
+                    depth -= 1
+            tokens.append(tokenize(text[i + 1:j]))
             i = j
         elif char in " ":
             pass
@@ -128,9 +132,19 @@ def tokenize(text):
     return tokens
 
 
+def extract_nums(tokens):
+    print("extracting nums from", tokens)
+    nums = []
+    for t in tokens:
+        if isinstance(t, list):
+            nums.extend(extract_nums(t))
+        elif isinstance(t, (int, float)):
+            nums.append(t)
+    return nums
+
+
 def eval_prefix(tokens):
     def helper(tokens):
-        print("prefix_eval", tokens)
         token = tokens.pop(0)
         if isinstance(token, list):
             return helper(token)
