@@ -69,6 +69,24 @@ class Game24(commands.Cog):
                 )
                 await ctx.send(f"24 game ended by {answer.author.mention}.")
                 return
+            if answer.content.lower() in ["skip", "pass"]:
+                await prompt.edit(
+                    content=", ".join(map(str, nums)) + f"\n-# Skipped by {answer.author.mention}."
+                )
+                continue
+            if answer.content.lower() in ["solve"]:
+                solution = solve_24_hardcoded(nums)
+                if solution:
+                    await prompt.edit(
+                        content=", ".join(map(str, nums))
+                        + f"\n-# Solution requested by {answer.author.mention}: `{solution}`"
+                    )
+                else:
+                    await prompt.edit(
+                        content=", ".join(map(str, nums))
+                        + f"\n-# No solution exists (this should not happen)."
+                    )
+                continue
             elapsed = time.time() - start_time
             await prompt.edit(
                 content=", ".join(map(str, nums))
@@ -76,7 +94,7 @@ class Game24(commands.Cog):
             )
 
     def eval_check(self, expr, nums, target=24):
-        if expr.lower() in ["quit", "exit", "stop"]:
+        if expr.lower() in ["quit", "exit", "stop", "skip", "pass", "solve"]:
             return True
         try:
             tokens = tokenize(expr)
@@ -231,6 +249,39 @@ def eval_postfix(tokens):
     if len(stack) != 1:
         raise ValueError("Invalid postfix expression")
     return stack[0]
+
+
+def solve_24_hardcoded(nums, target=24):
+    visited = set()
+    for a, b, c, d in permutations(nums):
+        if (a, b, c, d) in visited:
+            continue
+        visited.add((a, b, c, d))
+
+        ops = ['+', '-', '*', '/']
+        for op1 in ops:
+            for op2 in ops:
+                for op3 in ops:
+                    possibilities = [
+                        [[[a, op1, b], op2, c], op3, d],
+                        [[a, op1, [b, op2, c]], op3, d],
+                        [[a, op1, b], op2, [c, op3, d]],
+                        [a, op1, [[b, op2, c], op3, d]],
+                        [a, op1, [b, op2, [c, op3, d]]],
+                    ]
+                    for tokens in possibilities:
+                        try:
+                            if eval_infix(tokens) == target:
+                                return print_tokens(tokens)
+                        except ZeroDivisionError:
+                            continue
+    return None
+
+
+def print_tokens(tokens):
+    if isinstance(tokens, list):
+        return "(" + " ".join(print_tokens(t) for t in tokens) + ")"
+    return str(tokens)
 
 
 def setup(bot):
